@@ -1,0 +1,5 @@
+grammar;
+
+pub Thing: usize = {
+	<s:r".+"> => s.len(),
+};
