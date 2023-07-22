@@ -1,5 +1,17 @@
+use crate::lexer::Token;
+
 grammar;
 
-pub Thing: usize = {
-	<s:r".+"> => s.len(),
+pub Thing: String = {
+	<"num"> "eol"? => <>,
 };
+
+extern {
+	type Location = usize;
+	type Error = ();
+
+	enum Token {
+		"num" => Token::LitNumeric(<String>),
+		"eol" => Token::EOL,
+	}
+}

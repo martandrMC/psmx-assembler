@@ -6,7 +6,7 @@ build = "build.rs"
 
 [dependencies]
 regex = "=1.7.3"
-lalrpop-util = { version = "0.20.0", features = [ "lexer" ] }
+lalrpop-util = "0.20.0"
 
 [build-dependencies]
 lalrpop = "0.20.0"
