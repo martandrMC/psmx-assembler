@@ -135,8 +135,10 @@ impl<'input> Iterator for Lexer<'input> {
 						let x = self.chars.peek();
 						if let None = x { break }
 						let (_, c_) = x.unwrap();
-						if !c_.is_ascii_alphanumeric() { break }
-						buf.push(*c_);
+						if *c_ != '_' {
+							if !c_.is_ascii_alphanumeric() { break }
+							buf.push(*c_);
+						}
 						end += 1;
 						self.chars.next();
 					}

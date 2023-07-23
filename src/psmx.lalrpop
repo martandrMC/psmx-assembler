@@ -2,8 +2,8 @@ use crate::lexer::Token;
 
 grammar;
 
-pub Thing: String = {
-	<"num"> "eol"? => <>,
+pub Thing: (usize, String, usize) = {
+	<@L> <"num"> <@R> "eol"? => (<>),
 };
 
 extern {
