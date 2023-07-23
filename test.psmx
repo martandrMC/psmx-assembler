@@ -1,0 +1,42 @@
+;; util.psmx ;;
+
+; declare this file as a library (can't be assembled standalone)
+@pragma library
+
+@sect !util
+	; a4 = src, a5 = dst, a1 = len
+	@meta clobbers "a1 a4 a5 t0"
+	@code :!memcpy
+		jmp .exit t0.zer
+			mld t0 a4+
+			mst t0 a5+
+		dec a1
+		jmp ip .loop
+		.exit
+		jmp rp
+	@code end
+@sect end
+
+;; main.psmx ;;
+
+; declare this file as a program with an entrypoint function
+@pragma program !main:main
+
+; include a library file
+@incl "util.psmx" only !util
+
+@sect !main 0
+	@code :main
+		imm a1 :src#
+		imm a4 :src
+		imm a5 :dst
+		jnl !util:memcpy
+		hlt
+	@code end
+
+	@data :src array [ 1 2 3 4 5 6 7 8 ]
+	@data :dst reserve :src#
+@sect end
+
+; next available word after main section ( !main + !main# )
+@reloc !util !main$

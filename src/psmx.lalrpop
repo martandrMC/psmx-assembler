@@ -2,7 +2,9 @@ use crate::lexer::Token;
 
 grammar;
 
-pub Thing: (usize, String, usize) = {
+pub Thing: (usize,
+String,
+usize) = {
 	<@L> <"num"> <@R> "eol"? => (<>),
 };
 
@@ -11,7 +13,41 @@ extern {
 	type Error = ();
 
 	enum Token {
-		"num" => Token::LitNumeric(<String>),
 		"eol" => Token::EOL,
+		"sep" => Token::SEP,
+	
+		"txt" => Token::Identifier(<String>),
+		"num" => Token::LitNumeric(<String>),
+		"str" => Token::LitString(<String>),
+		
+		"pragma" => Token::KWPragma,
+		"param" => Token::KWParam,
+		"reloc" => Token::KWReloc,
+		"incl" => Token::KWIncl,
+		"meta" => Token::KWMeta,
+		"sect" => Token::KWSect,
+		"code" => Token::KWCode,
+		"data" => Token::KWData,
+		"end" => Token::KWEnd,
+		"multi" => Token::KWMulti,
+		"array" => Token::KWArray,
+		"reserve" => Token::KWReserve,
+		"string" => Token::KWString,
+		"only" => Token::KWOnly,
+		
+		"[" => Token::LSqParen,
+		"]" => Token::RSqParen,
+		"(" => Token::LParen,
+		")" => Token::RParen,
+		"@" => Token::At,
+		"!" => Token::Bang,
+		"%" => Token::Percent,
+		":" => Token::Colon,
+		"." => Token::Dot,
+		"+" => Token::Plus,
+		"-" => Token::Minus,
+		"*" => Token::Mult,
+		"$" => Token::Dollar,
+		"#" => Token::Hash,
 	}
 }

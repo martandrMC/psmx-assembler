@@ -3,19 +3,37 @@ extern crate lalrpop_util;
 lalrpop_mod!(psmx);
 
 mod lexer;
-use crate::lexer::Lexer;
+use crate::lexer::{Lexer, Token};
 
-use std::io::{Result, Read};
+use std::io::{Result, Read, Write};
 use std::fs::File;
 
 fn main() -> Result<()> {
 	let src_path: &'static str = "input.psmx";
-	//let dst_path: &'static str = "output.txt";
+	let dst_path: &'static str = "output.txt";
 	let content = get_file(src_path)?;
 	let lexer = Lexer::new(&content);
+	return run_parser(dst_path, lexer);
+	//return dump_tokens(dst_path, lexer);
+}
+
+#[allow(dead_code)]
+fn dump_tokens(path: &str, lexer: Lexer) -> Result<()> {
+	let mut dst_file = File::create(path)?;
+	for x in lexer {
+		let Ok((_,t,_)) = x else { writeln!(dst_file, "Err")?; break };
+		write!(dst_file, "{:?} ", t)?;
+		if let Token::EOL = t { write!(dst_file, "\n")?; }
+	}
+	return Ok(());
+}
+
+#[allow(dead_code)]
+fn run_parser(path: &str, lexer: Lexer) -> Result<()> {
+	let mut dst_file = File::create(path)?;
 	let parser = psmx::ThingParser::new();
 	let result = parser.parse(lexer);
-	println!("{:?}", result);
+	writeln!(dst_file, "{:?}", result)?;
 	return Ok(());
 }
 
