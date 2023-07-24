@@ -78,7 +78,7 @@ impl<'input> Iterator for Lexer<'input> {
 		let tok = match c {
 			';' | ' ' | '\t' | '\r' | '\n' => {
 				let mut comment = c == ';';
-				let mut eol = false;
+				let mut eol = c == '\r' || c == '\n';
 				loop {
 					match self.chars.peek() {
 						Some((_, ';')) => { comment = true; end += 1 },
