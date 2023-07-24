@@ -11,7 +11,7 @@ pub enum Token {
 	
 	Identifier(String), LitNumeric(String), LitString(String),
 	
-	KWPragma, KWParam, KWReloc, KWIncl, KWMeta, KWSect, KWCode, KWData,
+	KWPragma, KWDefine, KWReloc, KWIncl, KWMeta, KWSect, KWCode, KWData,
 	KWEnd, KWMulti, KWArray, KWReserve, KWString, KWOnly,
 	
 	LSqParen, RSqParen, LParen, RParen,
@@ -36,11 +36,11 @@ impl<'input> Lexer<'input> {
 	pub fn new(input: &'input str) -> Self {
 		make_map!(keywords, &'input str;
 			"reserve",	Token::KWReserve;
+			"define",	Token::KWDefine;
 			"string",	Token::KWString;
 			"pragma",	Token::KWPragma;
 			"multi",	Token::KWMulti;
 			"array",	Token::KWArray;
-			"param",	Token::KWParam;
 			"reloc",	Token::KWReloc;
 			"incl",		Token::KWIncl;
 			"meta",		Token::KWMeta;

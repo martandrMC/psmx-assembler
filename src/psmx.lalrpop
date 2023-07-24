@@ -2,9 +2,7 @@ use crate::lexer::Token;
 
 grammar;
 
-pub Thing: (usize,
-String,
-usize) = {
+pub Thing: (usize, String, usize) = {
 	<@L> <"num"> <@R> "eol"? => (<>),
 };
 
@@ -21,7 +19,7 @@ extern {
 		"str" => Token::LitString(<String>),
 		
 		"pragma" => Token::KWPragma,
-		"param" => Token::KWParam,
+		"define" => Token::KWDefine,
 		"reloc" => Token::KWReloc,
 		"incl" => Token::KWIncl,
 		"meta" => Token::KWMeta,
