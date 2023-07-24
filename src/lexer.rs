@@ -76,35 +76,21 @@ impl<'input> Iterator for Lexer<'input> {
 		let (start, c) = self.chars.next()?;
 		let mut end = start;
 		let tok = match c {
-			';' => {
+			';' | ' ' | '\t' | '\r' | '\n' => {
+				let mut comment = c == ';';
+				let mut eol = false;
 				loop {
 					match self.chars.peek() {
-						Some((_, '\r')) | Some((_, '\n')) | None => break,
-						Some(_) => {},
+						Some((_, ';')) => { comment = true; end += 1 },
+						Some((_, ' ')) | Some((_, '\t')) => end += 1,
+						Some((_, '\r')) | Some((_, '\n')) => { eol = true; comment = false; end += 1 },
+						Some((_, _)) => if !comment { break } else { end += 1 },
+						None => break,
 					}
 					self.chars.next();
 				}
-				return self.next();
-			},
-			' ' | '\t' => {
-				loop {
-					match self.chars.peek() {
-						Some((_, ' ')) | Some((_, '\t')) => { end+= 1 },
-						Some((_, _)) | None => { break },
-					}
-					self.chars.next();
-				}
-				Token::SEP
-			},
-			'\r' | '\n' => {
-				loop {
-					match self.chars.peek() {
-						Some((_, '\r')) | Some((_, '\n')) => { end+=1 },
-						Some((_, _)) | None => { break },
-					}
-					self.chars.next();
-				}
-				Token::EOL
+				if start == 0 { return self.next() }
+				if eol { Token::EOL } else { Token::SEP }
 			},
 			'"' => {
 				let mut buf = String::from(c);
