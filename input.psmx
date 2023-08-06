@@ -8,7 +8,7 @@
 @sect !util
 	; a4 = src, a5 = dst, a1 = len
 	@code :!memcpy
-		jmp .exit t0.zer
+		jmp .exit t0:zer
 			mld t0 a4+
 			mst t0 a5+
 		dec a1
@@ -16,4 +16,8 @@
 		.exit
 		jmp rp
 	@code end
+
+	@data :dummy multi
+		array [ 0h100 0hA4_55 -0b0100_0101 +100 ]
+	@data end
 @sect end

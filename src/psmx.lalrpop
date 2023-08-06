@@ -3,13 +3,28 @@ use crate::ast::*;
 
 grammar;
 
-Section:  String = { "!" <"txt"> => <> };
-Value:    String = { "%" <"txt"> => <> };
-Block:    String = { ":" <"txt"> => <> };
-Label:    String = { "." <"txt"> => <> };
-VisValue: String = { "%" "!" <"txt"> => <> };
-VisBlock: String = { ":" "!" <"txt"> => <> };
-VisLabel: String = { "." "!" <"txt"> => <> };
+pub ValueDecl: SymbolDecl = {
+	<s:Value> => SymbolDecl { name: s, visible: false, },
+	<s:VisValue> => SymbolDecl { name: s, visible: true, },
+};
+
+pub BlockDecl: SymbolDecl = {
+	<s:Block> => SymbolDecl { name: s, visible: false, },
+	<s:VisBlock> => SymbolDecl { name: s, visible: true, },
+};
+
+pub LabelDecl: SymbolDecl = {
+	<s:Label> => SymbolDecl { name: s, visible: false, },
+	<s:VisLabel> => SymbolDecl { name: s, visible: true, },
+};
+
+Section:  String = { "!" <s:"txt"> => s };
+Value:    String = { "%" <s:"txt"> => s };
+Block:    String = { ":" <s:"txt"> => s };
+Label:    String = { "." <s:"txt"> => s };
+VisValue: String = { "%" "!" <s:"txt"> => s };
+VisBlock: String = { ":" "!" <s:"txt"> => s };
+VisLabel: String = { "." "!" <s:"txt"> => s };
 
 extern {
 	type Location = usize;
