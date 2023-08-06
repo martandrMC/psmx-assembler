@@ -1,1 +1,19 @@
-0xA4_55
+;; util.psmx ;;
+
+; declare this file as a library (can't be assembled standalone)
+@pragma library
+
+@define %!cache 8
+
+@sect !util
+	; a4 = src, a5 = dst, a1 = len
+	@code :!memcpy
+		jmp .exit t0.zer
+			mld t0 a4+
+			mst t0 a5+
+		dec a1
+		jmp ip .loop
+		.exit
+		jmp rp
+	@code end
+@sect end

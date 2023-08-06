@@ -1,10 +1,15 @@
 use crate::lexer::Token;
+use crate::ast::*;
 
 grammar;
 
-pub Thing: (usize, String, usize) = {
-	<@L> <"num"> <@R> "eol"? => (<>),
-};
+Section:  String = { "!" <"txt"> => <> };
+Value:    String = { "%" <"txt"> => <> };
+Block:    String = { ":" <"txt"> => <> };
+Label:    String = { "." <"txt"> => <> };
+VisValue: String = { "%" "!" <"txt"> => <> };
+VisBlock: String = { ":" "!" <"txt"> => <> };
+VisLabel: String = { "." "!" <"txt"> => <> };
 
 extern {
 	type Location = usize;

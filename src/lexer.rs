@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::str::CharIndices;
 use std::iter::Peekable;
 
@@ -25,46 +25,50 @@ pub struct Lexer<'input> {
 	chars: Peekable<CharIndices<'input>>,
 }
 
-macro_rules! make_map {
-	($vec:ident, $keytype:ty; $($key:expr, $value:expr;)+) => {
-		let mut $vec: HashMap<$keytype, Token> = HashMap::new();
-		$($vec.insert($key, $value));+
+macro_rules! mkhash {
+	($name:ident, $keytype:ty, $valtype:ty; $($key:expr => $value:expr;)+) => {
+		let mut $name: HashMap<$keytype, $valtype> = HashMap::new();
+		$($name.insert($key, $value));+
+	};
+	($name:ident, $keytype:ty; $($key:expr;)+) => {
+		let mut $name: HashSet<$keytype> = HashSet::new();
+		$($name.insert($key));+
 	};
 }
 
 impl<'input> Lexer<'input> {
 	pub fn new(input: &'input str) -> Self {
-		make_map!(keywords, &'input str;
-			"reserve",	Token::KWReserve;
-			"define",	Token::KWDefine;
-			"string",	Token::KWString;
-			"pragma",	Token::KWPragma;
-			"multi",	Token::KWMulti;
-			"array",	Token::KWArray;
-			"reloc",	Token::KWReloc;
-			"incl",		Token::KWIncl;
-			"meta",		Token::KWMeta;
-			"sect",		Token::KWSect;
-			"code",		Token::KWCode;
-			"data",		Token::KWData;
-			"only",		Token::KWOnly;
-			"end",		Token::KWEnd;
+		mkhash!(keywords, &'input str, Token;
+			"reserve"	=>	Token::KWReserve;
+			"define"	=>	Token::KWDefine;
+			"string"	=>	Token::KWString;
+			"pragma"	=>	Token::KWPragma;
+			"multi"		=>	Token::KWMulti;
+			"array"		=>	Token::KWArray;
+			"reloc"		=>	Token::KWReloc;
+			"incl"		=>	Token::KWIncl;
+			"meta"		=>	Token::KWMeta;
+			"sect"		=>	Token::KWSect;
+			"code"		=>	Token::KWCode;
+			"data"		=>	Token::KWData;
+			"only"		=>	Token::KWOnly;
+			"end"		=>	Token::KWEnd;
 		);
-		make_map!(symbols, char;
-			'@', Token::At;
-			'(', Token::LParen;
-			')', Token::RParen;
-			'[', Token::LSqParen;
-			']', Token::RSqParen;
-			'!', Token::Bang;
-			'%', Token::Percent;
-			':', Token::Colon;
-			'.', Token::Dot;
-			'+', Token::Plus;
- 			'-', Token::Minus;
- 			'*', Token::Mult;
- 			'$', Token::Dollar;
-			'#', Token::Hash;
+		mkhash!(symbols, char, Token;
+			'@'	=>	Token::At;
+			'('	=>	Token::LParen;
+			')'	=>	Token::RParen;
+			'['	=>	Token::LSqParen;
+			']'	=>	Token::RSqParen;
+			'!'	=>	Token::Bang;
+			'%'	=>	Token::Percent;
+			':'	=>	Token::Colon;
+			'.'	=>	Token::Dot;
+			'+'	=>	Token::Plus;
+ 			'-'	=>	Token::Minus;
+ 			'*'	=>	Token::Mult;
+ 			'$'	=>	Token::Dollar;
+			'#'	=>	Token::Hash;
 		);
 		Lexer { symbols, keywords, chars: input.char_indices().peekable() }
 	}
