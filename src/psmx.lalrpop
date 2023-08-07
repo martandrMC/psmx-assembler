@@ -1,30 +1,67 @@
 use crate::lexer::Token;
-use crate::ast::*;
+use crate::ast::nodes::*;
+use crate::ast::util::*;
+
+use lalrpop_util::ParseError;
 
 grammar;
 
-pub ValueDecl: SymbolDecl = {
+pub DataEntry: DataEntry = {
+	<symb:LabelDecl> "eol" => DataEntry::Label(symb),
+	"string" "sep" <s:StringLiteral> "eol" => DataEntry::String(s),
+};
+
+ExprLeaf: ExprLeaf = {
+	<n:UnsignedLiteral> => ExprLeaf::Unsigned(n),
+	<n:SignedLiteral> => ExprLeaf::Signed(n),
+	<s:Symbol> => ExprLeaf::Symbol(s),
+	<s:Symbol> "#" => ExprLeaf::SymbolSizeOf(s),
+	<s:Symbol> "$" => ExprLeaf::SymbolOffset(s),
+};
+
+Symbol: Symbol = {
+	<s:Section> => Symbol::Section(s),
+	<s:Value> => Symbol::Value(s),
+	<s:Block> => Symbol::Block(s),
+	<s:Label> => Symbol::Label(s),
+	<s1:Section> <s2:Value> => Symbol::SectionValue(s1, s2),
+	<s1:Section> <s2:Block> => Symbol::SectionBlock(s1, s2),
+	<s1:Block> <s2:Label> => Symbol::BlockLabel(s1, s2),
+};
+
+ValueDecl: SymbolDecl = {
 	<s:Value> => SymbolDecl { name: s, visible: false, },
 	<s:VisValue> => SymbolDecl { name: s, visible: true, },
 };
 
-pub BlockDecl: SymbolDecl = {
+BlockDecl: SymbolDecl = {
 	<s:Block> => SymbolDecl { name: s, visible: false, },
 	<s:VisBlock> => SymbolDecl { name: s, visible: true, },
 };
 
-pub LabelDecl: SymbolDecl = {
+LabelDecl: SymbolDecl = {
 	<s:Label> => SymbolDecl { name: s, visible: false, },
 	<s:VisLabel> => SymbolDecl { name: s, visible: true, },
 };
 
-Section:  String = { "!" <s:"txt"> => s };
-Value:    String = { "%" <s:"txt"> => s };
-Block:    String = { ":" <s:"txt"> => s };
-Label:    String = { "." <s:"txt"> => s };
+// Literals and Identifier Components //
+
+StringLiteral: String = { <s:"str"> =>? handle_string_literal(&s) };
+UnsignedLiteral: u16 = { <n:"num"> =>? handle_unsigned_literal(&n) };
+SignedLiteral: i16 = {
+	"+" <n:"num"> =>? handle_signed_literal(&format!("+{}", n)),
+	"-" <n:"num"> =>? handle_signed_literal(&format!("-{}", n)),
+};
+
+Section: String = { "!" <s:"txt"> => s };
+Value: String = { "%" <s:"txt"> => s };
+Block: String = { ":" <s:"txt"> => s };
+Label: String = { "." <s:"txt"> => s };
 VisValue: String = { "%" "!" <s:"txt"> => s };
 VisBlock: String = { ":" "!" <s:"txt"> => s };
 VisLabel: String = { "." "!" <s:"txt"> => s };
+
+// Lexer Definition
 
 extern {
 	type Location = usize;

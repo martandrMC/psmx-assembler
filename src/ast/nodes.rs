@@ -8,6 +8,7 @@ pub struct AsmFile {
 pub enum AsmFileEntry {
 	Pragma(String, MetaArg),
 	Include(String),
+	Value(Value),
 	Relocate {
 		name: String,
 		addr: Expression,
@@ -18,18 +19,11 @@ pub enum AsmFileEntry {
 		metas: Vec<(String, MetaArg)>,
 		content: Vec<SectionEntry>,
 	},
-	Value {
-		name: String,
-		content: Expression,
-	},
 }
 
 #[derive(Debug)]
 pub enum SectionEntry {
-	Value {
-		name: SymbolDecl,
-		content: Expression,
-	},
+	Value(Value),
 	Code {
 		name: SymbolDecl,
 		metas: Vec<(String, MetaArg)>,
@@ -40,6 +34,12 @@ pub enum SectionEntry {
 		metas: Vec<(String, MetaArg)>,
 		content: Vec<DataEntry>,
 	},
+}
+
+#[derive(Debug)]
+pub struct Value {
+	pub name: SymbolDecl,
+	pub content: Expression,
 }
 
 #[derive(Debug)]
@@ -117,12 +117,6 @@ pub enum ExprLeaf {
 }
 
 #[derive(Debug)]
-pub struct SymbolDecl {
-	name: String,
-	visible: bool,
-}
-
-#[derive(Debug)]
 pub enum Symbol {
 	Section(String),
 	Value(String),
@@ -139,4 +133,10 @@ pub enum MetaArg {
 	None,
 	Unsigned(u16),
 	SectionBlock(String, String),
+}
+
+#[derive(Debug)]
+pub struct SymbolDecl {
+	pub name: String,
+	pub visible: bool,
 }

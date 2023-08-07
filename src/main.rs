@@ -17,8 +17,8 @@ fn main() -> Result<()> {
 	let mut content = get_file(src_path)?;
 	content.push('\n');
 	let lexer = Lexer::new(&content);
-	//return run_parser(dst_path, lexer);
-	return dump_tokens(dst_path, lexer);
+	return run_parser(dst_path, lexer);
+	//return dump_tokens(dst_path, lexer);
 }
 
 #[allow(dead_code)]
@@ -35,7 +35,7 @@ fn dump_tokens(path: &str, lexer: Lexer) -> Result<()> {
 #[allow(dead_code)]
 fn run_parser(path: &str, lexer: Lexer) -> Result<()> {
 	let mut dst_file = File::create(path)?;
-	let parser = psmx::AsmFileParser::new();
+	let parser = psmx::DataEntryParser::new();
 	let result = parser.parse(lexer);
 	writeln!(dst_file, "{:?}", result)?;
 	return Ok(());

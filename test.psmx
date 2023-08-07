@@ -3,11 +3,12 @@
 ; declare this file as a library (can't be assembled standalone)
 @pragma library
 
-@sect !util
+@define %!cache 8
+
+@sect !util_yes
 	; a4 = src, a5 = dst, a1 = len
-	@meta clobbers "a1 a4 a5 t0"
 	@code :!memcpy
-		jmp .exit t0.zer
+		jmp .exit t0:zer
 			mld t0 a4+
 			mst t0 a5+
 		dec a1
@@ -30,11 +31,11 @@
 		imm a1 :src#
 		imm a4 :src
 		imm a5 :dst
-		jnl !util:memcpy
+		jnl !util_yes:memcpy
 		hlt
 	@code end
 
-	@data :src array [ 1 2 3 4 5 6 7 8 ]
+	@data :src array [ 0h100 0hA4_55 -0b0100_0101 +100 ]
 	@data :dst reserve :src#
 @sect end
 
